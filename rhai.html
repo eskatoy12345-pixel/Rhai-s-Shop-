@@ -1,0 +1,235 @@
+<!DOCTYPE html> <!-- Deklara na HTML5 document -->
+<html lang="en"> <!-- Wika ng page: English -->
+<head>
+<meta charset="UTF-8"> <!-- Character encoding para suportahan ang lahat ng characters -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Para responsive sa mobile -->
+<title>Rhai's Laptop Shop</title> <!-- Title na lalabas sa browser tab -->
+<style>
+/* ===== BODY STYLING ===== */
+body {
+  font-family: Arial, sans-serif; /* Font para sa buong page */
+  margin: 0; /* Wala default margin */
+  padding: 0; /* Wala default padding */
+  background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e'); /* Background image ng shop */
+  background-size: cover; /* Punuin ang buong screen ang image */
+  background-repeat: no-repeat; /* Hindi uulitin ang image */
+  background-attachment: fixed; /* Hindi gumagalaw ang background kapag nag-scroll */
+  text-align:center; /* Center ang lahat ng text */
+}
+
+/* ===== NAVIGATION BAR ===== */
+nav {
+  background-color: gray; /* Kulay ng nav bar */
+  padding: 10px; /* Padding sa loob ng nav */
+  display: flex; /* Flexible layout */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  font-family: Times New Roman; /* Font para sa nav buttons */
+  tab-size: bold; /* Mali, pwedeng tanggalin */
+}
+
+nav button {
+  color: black; /* Text color ng buttons */
+  background: white; /* Button background */
+  border: 1px solid; /* Mali, dapat 'border: 1px solid black;' */
+  margin: 0 15px; /* Space sa pagitan ng buttons */
+  font-size: 16px; /* Laki ng text */
+  cursor: pointer; /* Nagiging pointer kapag hover */
+  border-block-color: black; /* Optional, puwedeng tanggalin */
+}
+
+/* ===== CART ICON ===== */
+#cart-icon {
+  position: relative; /* Para ma-position ang count bubble */
+}
+
+#cart-count {
+  position: absolute; /* Position ng count bubble */
+  top: -8px; /* Itaas ng kaunti */
+  right: -10px; /* I-right ng kaunti */
+  background: red; /* Red na bilog */
+  color: white; /* White text */
+  font-size: 12px; /* Maliit na number */
+  padding: 2px 6px; /* Padding sa loob ng bilog */
+  border-radius: 50%; /* Bilog ang shape */
+}
+
+/* ===== SECTIONS ===== */
+section {
+  display: none; /* Hide lahat ng sections by default */
+  padding: 20px; /* Padding sa loob ng section */
+}
+
+section.active {
+  display: block; /* Ipakita kapag active */
+}
+
+/* ===== PRODUCT BOX ===== */
+.product {
+  border: 5px solid gray; /* Border ng product box */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px; /* Space sa loob ng box */
+  margin: 10px; /* Space sa labas ng box */
+  display: inline-block; /* Para mag-row ang products */
+  width: 200px; /* Lapad ng bawat product */
+  text-align: center; /* Center text */
+  background-color: white; /* Background ng box */
+  color: green; /* Text color */
+}
+
+.product img {
+  max-width: 100%; /* Fit sa container */
+  height: 150px; /* Fixed height */
+  object-fit: cover; /* Para hindi ma-stretch ang image */
+  border-radius: 8px; /* Rounded corners ng image */
+}
+
+/* ===== BUTTONS ===== */
+.addToCart-btn{
+  background-color: yellow; /* Add to cart button color */
+}
+
+.Checkout-btn{
+  background-color: red; /* Checkout button color */
+  color: white; /* Text color */
+}
+
+/* ===== LOGO ===== */
+#logo{
+  width: 100px;       /* Lapad ng logo */
+  height: 100px;      /* Taas ng logo */
+  border-radius: 50%; /* Gawing bilog */
+  object-fit: cover;  /* Para hindi ma-distort */
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <button onclick="showSection('home')">Home</button> <!-- Button para Home section -->
+  <button onclick="showSection('products')">Available Products</button> <!-- Button para Products -->
+  <button onclick="showSection('about')">About Us</button> <!-- Button para About Us -->
+  <button id="cart-icon" onclick="showSection('cart')">🛒 Cart 
+    <span id="cart-count">0</span> <!-- Bilang ng items sa cart -->
+  </button>
+</nav>
+
+<!-- ===== HOME SECTION ===== -->
+<section id="home" class="active">
+  <img src="https://i.imgur.com/8iOJu1E.jpg" alt="logo" id="logo"> <!-- Logo ng shop -->
+  <h1>Welcome to Rhai's Laptop Shop</h1> <!-- Heading -->
+  <p>Your one-stop shop for quality laptops.</p> <!-- Description -->
+</section>
+
+<!-- ===== PRODUCTS SECTION ===== -->
+<section id="products">
+  <h1>Available Laptops</h1>
+  <div id="product-list"></div> <!-- Container ng products -->
+</section>
+
+<!-- ===== ABOUT SECTION ===== -->
+<section id="about">
+  <h1>About Us</h1>
+  <p>Rhai's Shop selling top-quality laptops at affordable prices.</p> <!-- Description -->
+</section>
+
+<!-- ===== CART SECTION ===== -->
+<section id="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul> <!-- List ng cart items -->
+  <p>Total: $<span id="cart-total">0</span></p> <!-- Total amount -->
+  <button onclick="placeOrder()">Place Order</button> <!-- Button para sa order -->
+</section>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== PRODUCT DATA =====
+const products = [ 
+  { id: 1, name: "Acer Aspire 5", price: 500, image: "https://m.media-amazon.com/images/I/71vvXGmdKWL._AC_SL1500_.jpg" ,rating:5},
+  { id: 2, name: "Dell Inspiron 15", price: 650, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpGd5UlJcvaFfu94UYYihYC3wJYrBHnAcrMXz7WMgbEsvprmeIX1PSIVY&s=10" ,rating:4},
+  { id: 3, name: "HP Pavilion 14", price: 620, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq6iDtjB4ybbIwv37Ll_5-rtgy3Id21kFeYC-Q9YYgCpuAvJ2L6rZNqog&s=10" ,rating:5},
+  { id: 4, name: "Lenovo IdeaPad 3", price: 550, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCTZAyCukRjHuB3HPk0aRTXPcR9LYJ3tvHIbXzu4DRO98fFa_KUeIKGzg&s=10" ,rating:5},
+  { id: 5, name: "ASUS VivoBook 15", price: 580, image: "https://m.media-amazon.com/images/I/71WuDXpTAlL._AC_SL1500_.jpg" ,rating:4},
+  { id: 6, name: "MacBook Air M1", price: 999, image: "https://m.media-amazon.com/images/I/71TPda7cwUL._AC_SL1500_.jpg" ,rating:5},
+  { id: 7, name: "MSI Modern 14", price: 750, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9ZUJJ4mrSYvV0XmJ0a_qfoyivnmtCQxXf-EHXRTkaa_B3Rp_dR7CZ6Z1l&s=10" ,rating:4},
+  { id: 8, name: "Razer Blade 15", price: 1200,image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO1iP6hRQiArGE6yNM4mdbyo0byVUqO6aXrWghfudOlZ8v3CcLGT2mYag&s=10" ,rating:4},
+  { id: 9, name: "Acer Swift 3", price: 640, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgM5QX8ZsKa_MWm3yq-ADVEhSug_MR40qFjB8XEN0_HNbFRFj-17Z_6Zo&s=10" ,rating:5},
+  { id: 10, name: "HP Envy x360", price: 850,image: "https://m.media-amazon.com/images/I/71MlcO29QOL._AC_SL1500_.jpg" ,rating:5},
+];
+
+let cart = []; // Array para sa cart items
+
+// ===== FUNCTION: SHOW SECTION =====
+function showSection(id) { 
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active')); // Hide lahat
+  document.getElementById(id).classList.add('active'); // Ipakita ang selected section
+}
+
+// ===== FUNCTION: RENDER PRODUCTS =====
+function renderProducts() {
+  const container = document.getElementById('product-list'); // Container div
+  container.innerHTML = ''; // Clear bago mag-render
+  products.forEach(product => { 
+    const div = document.createElement('div'); 
+    div.className = 'product';
+    div.innerHTML = `
+      <img src="${product.image}" alt="${product.name}"> <!-- Product image -->
+      <h3>${product.name}</h3> <!-- Product name -->
+      <p>$${product.price}</p> <!-- Price -->
+      <p>${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))} (${product.rating})</p> <!-- Rating -->
+      <button class="addToCart-btn" onclick="addToCart(${product.id})">Add to Cart</button> <!-- Add to Cart -->
+      <button class="Checkout-btn" onclick="checkoutNow(${product.id})">Checkout Now</button> <!-- Checkout individual -->
+    `;
+    container.appendChild(div); // I-add sa container
+  });
+}
+
+// ===== FUNCTION: RENDER CART =====
+function renderCart() {
+  const list = document.getElementById('cart-items'); 
+  list.innerHTML = ''; // Clear list
+  let total = 0; 
+  cart.forEach(item => { 
+    const li = document.createElement('li'); 
+    li.textContent = `${item.name} - $${item.price}`; // Show item name at price
+    list.appendChild(li); 
+    total += item.price; // Add sa total
+  });
+  document.getElementById('cart-total').textContent = total; // Update total
+  document.getElementById('cart-count').textContent = cart.length; // Update count
+}
+
+// ===== FUNCTION: ADD TO CART =====
+function addToCart(id) {
+  const product = products.find(p => p.id === id); // Hanapin product
+  cart.push(product); // Add sa cart
+  renderCart(); // Update cart display
+  console.log(`${product.name} added to cart!`); // Log sa console
+}
+
+// ===== FUNCTION: CHECKOUT SINGLE ITEM =====
+function checkoutNow(id) {
+  const product = products.find(p => p.id === id);
+  alert(`You have checked out:\n${product.name} - $${product.price}`); // Show alert
+}
+
+// ===== FUNCTION: PLACE ORDER =====
+function placeOrder() {
+  if (cart.length === 0) { // Check kung empty
+    alert('Your cart is empty!');
+    return;
+  }
+  const total = document.getElementById('cart-total').textContent; // Get total
+  alert(`Order placed successfully!\nTotal: $${total}`); // Show confirmation
+  cart = []; // Clear cart
+  renderCart(); // Update display
+  showSection('products'); // Balik sa products page
+}
+
+// ===== INITIAL RENDER =====
+renderProducts(); // Ipakita agad ang products
+</script>
+
+</body>
+</html>
